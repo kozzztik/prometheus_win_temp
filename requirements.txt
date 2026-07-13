@@ -1,2 +1,3 @@
 pythonnet
 prometheus_client
+sentry_sdk

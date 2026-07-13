@@ -1,2 +1,4 @@
 /venv/
 /prometheus_win_temp/metrics.txt
+/prometheus_win_temp.dist/
+/prometheus_win_temp.build/

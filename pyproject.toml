@@ -1,0 +1,40 @@
+[project]
+name = "prometheus_win_temp"
+description = "Prometheus Windows temperature exporter"
+authors = [
+    { name = "Konstantin Volkov", email = "kozzztik@mail.ru" },
+]
+dynamic = ["version", "dependencies", "optional-dependencies", "readme"]
+requires-python = ">=3.13"
+
+[tool.setuptools.dynamic]
+version = { attr = "prometheus_win_temp.__version__" }
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies.test = { file = ["test_requirements.txt"] }
+readme = {file = ["README.md"], content-type = "text/markdown"}
+
+[project.urls]
+Repository = "https://github.com/kozzztik/prometheus_win_temp"
+Documentation = "https://github.com/kozzztik/prometheus_win_temp/blob/main/README.md"
+
+
+[project.scripts]
+prometheus_win_temp = "prometheus_win_temp.main:main"
+
+
+[build-system]
+requires = ["setuptools >= 61.0", "wheel", "nuitka",]
+build-backend = "nuitka.distutils.Build"
+
+
+[tool.setuptools]
+packages = ["prometheus_win_temp"]
+
+[tool.setuptools.package-data]
+prometheus_win_temp = ['libre']
+
+[nuitka]
+mode="standalone"
+include_package_data = true
+no_pyi_stubs = true
+no_pyi_file = true

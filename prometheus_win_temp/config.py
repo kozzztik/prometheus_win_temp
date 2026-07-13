@@ -11,9 +11,9 @@ class Config:
         self.sentry = {}
 
     def load(self, file_path: pathlib.Path):
-        with file_path.open('b') as f:
+        with file_path.open('br') as f:
             data = tomllib.load(f)
-        self.sentry = data['sentry']
+        self.sentry = data.get('sentry') or {}
 
         file_path = data.get('file_path', None)
         if file_path:

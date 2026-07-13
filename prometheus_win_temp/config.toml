@@ -1,0 +1,3 @@
+file_path = "C:\\Program Files\\windows_exporter\\textfile_inputs\\temp.prom"
+period = 5
+sensor_types = ["Temperature", "SmallData", "Load"]

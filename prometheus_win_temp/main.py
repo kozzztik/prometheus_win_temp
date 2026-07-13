@@ -10,6 +10,8 @@ try:
 except ModuleNotFoundError:
     sentry_sdk = None
 
+DEFAULT_CONFIG_FILE = pathlib.Path(__name__).parent / "config.toml"
+
 
 def print_metrics(monitor: Monitor, period: int = 5):
     while True:
@@ -43,9 +45,14 @@ parser.add_argument('-c', '--config', type=str, default='', help='Path to config
 
 def main():
     args = parser.parse_args()
+    # load config file
     config = Config()
     if args.config:
         config.load(args.config)
+    elif DEFAULT_CONFIG_FILE.exists():
+        config.load(DEFAULT_CONFIG_FILE)
+
+    # override config by command line options
     if args.file:
         config.file_path = args.file
     if args.period:

@@ -6,6 +6,7 @@ class Config:
     file_path: pathlib.Path | None = None
     period: int = 5
     sensor_types: list[str] = ['Temperature', 'SmallData', 'Load']
+    log_file: pathlib.Path | None = None
 
     def __init__(self):
         self.sentry = {}
@@ -26,3 +27,7 @@ class Config:
             self.sensor_types = [str(sensor_type) for sensor_type in sensor_types]
         else:
             self.sensor_types = [str(sensor_types)]
+
+        log_file = data.get('log_file', None)
+        if log_file:
+            self.log_file = pathlib.Path(log_file)

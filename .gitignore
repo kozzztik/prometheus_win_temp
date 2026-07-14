@@ -2,3 +2,6 @@
 /prometheus_win_temp/metrics.txt
 /prometheus_win_temp.dist/
 /prometheus_win_temp.build/
+/prometheus_win_temp.onefile-build/
+/config.toml
+/dist/

@@ -1,9 +1,13 @@
 import pathlib
+import sys
 
 import prometheus_client
 import clr
 
-libre_lib_path = pathlib.Path(__name__).parent / 'libre' / 'LibreHardwareMonitorLib.dll'
+libre_lib_path = pathlib.Path('libre') / 'LibreHardwareMonitorLib.dll'
+if not libre_lib_path.exists():
+    # for py2exe library search
+    libre_lib_path = pathlib.Path(sys.executable).parent / libre_lib_path
 clr.AddReference(str(libre_lib_path.absolute()))
 
 REMOVE_SYMBOLS = '#()'

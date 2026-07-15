@@ -83,15 +83,22 @@ import prometheus_win_temp
 libre_lib_path = pathlib.Path(prometheus_win_temp.__file__).parent / 'libre'
 
 freeze(
-    # console=[
-    #     {
-    #         'script': 'prometheus_win_temp/main.py',
-    #     }
-    # ],
+    console=[
+        {
+            'script': 'prometheus_win_temp/main.py',
+            'dest_base': 'prometheus_win_temp',
+            'cmdline_style': 'pywin32',
+            'optimize': 2,
+            'compressed': 1,
+        }
+    ],
     service=[
         {
+            'dest_base': 'service.exe',
             'modules': 'prometheus_win_temp.main',
             'cmdline_style': 'pywin32',
+            'optimize': 2,
+            'compressed': 1,
         }
     ],
     options={
@@ -106,6 +113,10 @@ freeze(
             'sentry_sdk.integrations.modules',
             'sentry_sdk.integrations.stdlib',
             'sentry_sdk.integrations.threading',
+        ],
+        'excludes': [
+            'asyncio',
+            'tkinter'
         ],
     },
     data_files=[

@@ -37,7 +37,7 @@ environment = "dev"
 ```
 Install it as service (**run with administrator privileges**):
 ```commandline
-"C:\Program Files\prometheus_win_temp\main.exe" install
+"C:\Program Files\prometheus_win_temp\service.exe" --startup auto install
 ```
 
 Enjoy!
@@ -47,5 +47,5 @@ Enjoy!
 pip install py2exe
 python3 build.py
 xcopy dist "C:\Program Files\prometheus_win_temp" /E /Y
-"C:\Program Files\prometheus_win_temp\main.exe" install
+"C:\Program Files\prometheus_win_temp\service.exe" --startup auto install
 ```

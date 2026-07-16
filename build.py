@@ -1,5 +1,9 @@
 import pathlib
+import shutil
 
+from clr_loader import ffi
+import pythonnet
+import prometheus_win_temp
 from py2exe import freeze
 from py2exe import hooks
 
@@ -75,12 +79,13 @@ del wrapper
 hooks.hook_cffi = hook_cffi
 hooks.hook_clr_loader = hook_clr_loader
 
-from clr_loader import ffi
 ffi_path = pathlib.Path(ffi.__file__).parent / 'dlls' / 'amd64'
-import pythonnet
 pythonnet_runtime = pathlib.Path(pythonnet.__file__).parent / 'runtime'
-import prometheus_win_temp
 libre_lib_path = pathlib.Path(prometheus_win_temp.__file__).parent / 'libre'
+
+dist_path = pathlib.Path('dist')
+freeze_target = dist_path / 'prometheus_win_temp'
+freeze_target.mkdir(parents=True, exist_ok=True)
 
 freeze(
     console=[
@@ -94,7 +99,7 @@ freeze(
     ],
     service=[
         {
-            'dest_base': 'service.exe',
+            'dest_base': 'service',
             'modules': 'prometheus_win_temp.main',
             'cmdline_style': 'pywin32',
             'optimize': 2,
@@ -102,6 +107,7 @@ freeze(
         }
     ],
     options={
+        'dist_dir': freeze_target,
         'includes': [
             'encodings',
             'clr',
@@ -119,8 +125,12 @@ freeze(
         ],
     },
     data_files=[
-        ('clr_loader\\ffi\\dlls\\amd64', [str(ffi_path /  'ClrLoader.dll'), str(ffi_path / 'ClrLoader.pdb')]),
-        ('pythonnet\\runtime', list(str(p) for p in pythonnet_runtime.iterdir())),
-        ('libre', list(str(p) for p in libre_lib_path.iterdir())),
+        ('clr_loader\\ffi\\dlls\\amd64', [ffi_path /  'ClrLoader.dll', ffi_path / 'ClrLoader.pdb']),
+        ('pythonnet\\runtime', list(pythonnet_runtime.iterdir())),
+        ('libre', list(libre_lib_path.iterdir())),
+        ('', [pathlib.Path('prometheus_win_temp') / 'config.toml']),
     ]
 )
+
+(dist_path / 'prometheus_win_temp.zip').unlink(missing_ok=True)
+shutil.make_archive(str(freeze_target), 'zip', str(freeze_target))

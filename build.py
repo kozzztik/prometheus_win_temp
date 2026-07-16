@@ -115,7 +115,6 @@ freeze(
             'sentry_sdk.integrations.threading',
         ],
         'excludes': [
-            'asyncio',
             'tkinter'
         ],
     },

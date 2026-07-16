@@ -35,9 +35,10 @@ sensor_types = ["Temperature", "SmallData", "Load"]
 dsn = "..."
 environment = "dev"
 ```
-Install it as service (**run with administrator privileges**):
+Install it as service (**run with administrator privileges**) and run:
 ```commandline
 "C:\Program Files\prometheus_win_temp\service.exe" --startup auto install
+"C:\Program Files\prometheus_win_temp\service.exe" start
 ```
 
 Enjoy!

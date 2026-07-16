@@ -57,7 +57,7 @@ parser.add_argument(
         # windows service commands
         'install', 'remove', 'update', 'start', 'restart', 'debug', '',
         # own commands
-        'print', 'file'
+        'file'
     ],
     help='Action to perform'
 )
@@ -70,7 +70,6 @@ class Service(windowsservice.BaseService):
     _svc_name_ = "prometheus-windows-exporter"
     _svc_display_name_ = "Prometheus Windows Exporter"
     _svc_description_ = "Addon to windows_exporting adding temperature and other hardware specific metrics"
-    _exe_name_ = sys.argv[0]
     _svc_deps_ = ('windows_exporter',)
 
     stop_event = threading.Event()
@@ -87,15 +86,25 @@ class Service(windowsservice.BaseService):
         logger.info("Starting application as service")
 
     def main(self):
-        config, iterator = configure()
+        config, _ = configure()
         logger.info("Application configured and ready as service")
-        stamp = time.time()
+
+        monitor = Monitor()
+        logger.info("Monitor created")
+        if not config.file_path:
+            raise NotImplementedError('File path not configured.')
+        if not config.file_path.is_absolute():
+            config.file_path = pathlib.Path.home() / config.file_path
+        config.file_path.parent.mkdir(parents=True, exist_ok=True)
+        logger.info("Starting file output to {}".format(config.file_path))
+        iterator = out_file(monitor, config.file_path)
+
         try:
             while not self.stop_event.is_set():
+                stamp = time.time()
                 next(iterator)
-                stamp += config.period
-                sleep_time = max(stamp - time.time(), 0)
-                if sleep_time:
+                sleep_time = stamp + config.period - time.time()
+                if sleep_time > 0:
                     self.stop_event.wait(sleep_time)
         except Exception:
             logger.exception("Unhandled exception")
@@ -107,7 +116,7 @@ class Service(windowsservice.BaseService):
         self.stop_event.set()
 
 
-def configure() -> tuple[Config, t.Iterator]:
+def configure() -> tuple[Config, argparse.Namespace]:
     logger.info("Starting configuration")
 
     try:
@@ -119,7 +128,6 @@ def configure() -> tuple[Config, t.Iterator]:
         if args.config:
             config.load(args.config)
             logger.info("loaded config {}".format(args.config))
-
         else:
             for path in DEFAULT_CONFIG_FILES:
                 if path.exists():
@@ -147,26 +155,29 @@ def configure() -> tuple[Config, t.Iterator]:
             logger.info("Init sentry")
             sentry_sdk.init(**config.sentry, auto_enabling_integrations=False, integrations=[])
 
-        monitor = Monitor()
-        logger.info("Monitor created")
-
-        if args.command == 'print':
-            logger.info("Start output to screen")
-            iterator = print_metrics(monitor)
-        else:
-            if not config.file_path.is_absolute():
-                config.file_path = pathlib.Path.home() / config.file_path
-            config.file_path.parent.mkdir(parents=True, exist_ok=True)
-            logger.info("Starting file output to {}".format(config.file_path))
-            iterator = out_file(monitor, config.file_path)
-
-        return config, iterator
+        return config, args
     except BaseException:
         logger.exception("Unhandled exception")
         raise
 
 def main():
-    config, iterator = configure()
+    config, args = configure()
+
+    monitor = Monitor()
+    logger.info("Monitor created")
+
+    if not args.command:
+        logger.info("Start output to screen")
+        iterator = print_metrics(monitor)
+    elif args.command == 'file':
+        if not config.file_path.is_absolute():
+            config.file_path = pathlib.Path.home() / config.file_path
+        config.file_path.parent.mkdir(parents=True, exist_ok=True)
+        logger.info("Starting file output to {}".format(config.file_path))
+        iterator = out_file(monitor, config.file_path)
+    else:
+        raise NotImplementedError
+
     logger.info("Application configured and ready as script")
     try:
         stamp = time.time()

@@ -20,6 +20,9 @@ Core_Tctl_Tdie{hardware="AMD Ryzen 9 9950X3D",hw_type="Cpu",index="2",sensor="Te
 GPU_Memory_Total{hardware="AMD Radeon(TM) Graphics",hw_type="GpuAmd",index="2",sensor="SmallData"} 2048.0
 GPU_Memory_Total{hardware="NVIDIA GeForce RTX 4070 Ti",hw_type="GpuNvidia",index="2",sensor="SmallData"} 12282.0
 ```
+Application is written in Python 3.13 (while Monitor with .NET) and packed as executalbe by py2exe to make possible
+to run it as windows service. As executable it includes Python interpreter and all required dependencies so package
+is huge for such simple application, but it is easy to install and run (and write!)
 
 ## Install
 
@@ -44,7 +47,7 @@ collectors:
 
 Extract files of `prometheus-windows-exporter` from archive somewhere like `C:\Program Files\prometheus_win_temp`.
 
-Install it as service (**run with administrator privileges**) and run:
+Install it as service (**run with administrator privileges**):
 ```commandline
 "C:\Program Files\prometheus_win_temp\service.exe" --startup auto install
 "C:\Program Files\prometheus_win_temp\service.exe" start

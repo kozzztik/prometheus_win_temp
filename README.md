@@ -35,6 +35,13 @@ collectors:
   enabled: cpu,logical_disk,memory,net,os,physical_disk,service,system,textfile
 ```
 
+> [!WARNING]
+> Before extracting files, remove mark "Downloaded from internet" 
+> from zip archive. Otherwise extracted files will have same mark and DLLs wouldn't
+> properly loaded on application startup.
+> 
+![unblock image](docs/from_internet_block.png)
+
 Extract files of `prometheus-windows-exporter` from archive somewhere like `C:\Program Files\prometheus_win_temp`.
 
 Install it as service (**run with administrator privileges**) and run:

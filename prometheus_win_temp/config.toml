@@ -3,5 +3,5 @@ period = 5
 sensor_types = ["Temperature", "SmallData", "Load"]
 
 [sentry]
-dsn = "..."
+dsn = ""
 environment = "local"
